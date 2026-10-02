@@ -48,9 +48,6 @@ template = ChatPromptTemplate.from_messages([
 prompt = template.invoke({"prompt": "Obi-Wan: - Hello There!"})
 print(prompt)
 
-# thes the message
-print()
-
 chain = template | llm 
 
 response = chain.invoke({"prompt": "Obi-Wan: - Hello There!"})
