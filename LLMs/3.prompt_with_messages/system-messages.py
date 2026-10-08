@@ -66,6 +66,7 @@ print("====================================================================")
 # 1 - as historian would, 2 as an economis would and 3 as an geographer would 
 korea_prompt = "Tell me about South Korea in less than 50 words."
 
+# system messages 
 historian = "You are a historian who helps users understand the culture, society, and impactful events that occurred."
 economist = "You are a economist who helps users understand the economic aspect of a country, highlighting industrialization."
 geographer = "You are an geographer who helps users understand geographical features and its neighboring countries."
@@ -73,12 +74,27 @@ geographer = "You are an geographer who helps users understand geographical feat
 print("Historian response: ")
 
 # create a template with a dynamic system message 
-focus_response_template = ChatPromptTemplate([
-    ("system", "{system_focus}"),
+focus_response_template = ChatPromptTemplate.from_messages([
+    ("system", "{system_message}"),
     ("human", "{prompt}")
 ])
 
-korean_chain = focus_response_template | llm | output_parser
+# create the chains 
+historian_chain = focus_response_template.partial(system_message=historian) | llm | output_parser
+economist_chain = focus_response_template.partial(system_message=economist) | llm | output_parser
+geographer_chain = focus_response_template.partial(system_message=geographer) | llm | output_parser
 
-historian_response =  korean_chain.invoke([{"system_focus": historian}, {"prompt": korea_prompt}])
-print(historian_response)
+# define parallel chain
+from langchain_core.runnables import RunnableParallel
+
+chain = RunnableParallel({
+    'history_response': historian_chain, 
+    'economist_response': economist_chain, 
+    'geographer_response': geographer_chain
+})
+
+# invoque the parallel chain
+responses = chain.invoke({'prompt': korea_prompt})
+
+for response in responses.values():
+    print(response + '\n\n---\n')
