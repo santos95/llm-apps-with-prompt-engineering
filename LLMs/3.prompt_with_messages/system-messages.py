@@ -1,6 +1,8 @@
 from langchain_nvidia_ai_endpoints import ChatNVIDIA
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser 
+# define parallel chain
+from langchain_core.runnables import RunnableParallel
 from dotenv import load_dotenv
 
 #  define base params for llms model requests 
@@ -32,7 +34,7 @@ output_parser = StrOutputParser()
 chain = prompt_template | llm | output_parser 
 
 # invoke the llm and get the response 
-result = chain.invoke({"prompt", "Who are you?"})
+result = chain.invoke({"prompt": "Who are you?"})
 
 print(result)
 
@@ -84,8 +86,7 @@ historian_chain = focus_response_template.partial(system_message=historian) | ll
 economist_chain = focus_response_template.partial(system_message=economist) | llm | output_parser
 geographer_chain = focus_response_template.partial(system_message=geographer) | llm | output_parser
 
-# define parallel chain
-from langchain_core.runnables import RunnableParallel
+
 
 chain = RunnableParallel({
     'history_response': historian_chain, 
