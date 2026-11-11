@@ -96,3 +96,18 @@ zero_shot_multiplication_chain = zero_shot_cot_prompt | llm | StrOutputParser()
 print(zero_shot_multiplication_chain.invoke('What is 345 * 888?'))
 
 
+print("===================== EXERCISE============================")
+word_problem = """Michael's car travels at 40 miles per hour. He is driving from 1 PM to 4 PM and then \
+travels back at a rate of 25 miles per hour due to heavy traffic. How long in \
+terms of minutes did it take him to get back?"""
+
+# IMPLEMENTING A Zero-shoot CoT 
+
+template = ChatPromptTemplate.from_messages([
+    ('system', 'You are an expert word problem solver. You always break your problem down into smaller tasks and show your work.'),
+    ('human', '{prompt}\n\nLet\'s think step by step.')
+])
+
+problem_chain = template | llm | StrOutputParser()
+
+print("The solution is: ", problem_chain.invoke(word_problem))
