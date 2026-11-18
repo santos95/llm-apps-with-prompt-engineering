@@ -22,7 +22,7 @@ class Chatbot:
         ])
 
         # define the chain 
-        self.chat_chain = chat_conversation_template | llm | StrOutputParser
+        self.chat_chain = chat_conversation_template | llm | StrOutputParser()
 
         # define an empty list properties for the messages history 
         self.chat_conversation = []
@@ -30,10 +30,31 @@ class Chatbot:
     # chat - expects a simple string prompt
     def chat(self, prompt):
 
-        # append the prompt as user message to chat conversation
+        # append the prompt as an user message 
         self.chat_conversation.append(('user', prompt))
 
+        # get the response from the model 
         response = self.chat_chain.invoke({'chat_conversation': self.chat_conversation})
 
-        return response 
+        # append the response to the chat history as ai message 
+        self.chat_conversation.append(('ai', response))
+
+        # return the response to the user 
+        return response
+
+    def clear_history(self):
+        self.chat_conversation = []  
+
+
+# test 
+chatbot = Chatbot(llm)
+
+print(chatbot.chat("Hello there! My name is John Connor!"))
+
+print(chatbot.chat("Do you remember my name?"))
+
+print(chatbot.chat("can we be friends?"))
+
+print(chatbot.chat("will you know me in the futere and how you call me?"))
+
 
